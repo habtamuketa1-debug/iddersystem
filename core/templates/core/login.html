@@ -71,8 +71,8 @@
 <body>
 
 <div class="login-card">
-    <!-- የተዘጋጀውን ሎጎ እዚህ እናሳያለን -->
-    <img src="{% static 'images/logo.png' %}" alt="የዕድሩ ሎጎ" style="height: 50px;">
+    <!-- ሎጎው ከላይ በዲዛይኑ መሰረት በትክክል እንዲታይ ተደረገ -->
+    <img src="{% static 'images/logo.png' %}" alt="የዕድሩ ሎጎ" class="logo-img">
     <div class="title">በቅ.ሚካኤል ቤ.ክ የአካባቢ ልጆች መ.እድር</div>
 
     <form method="post">
@@ -82,7 +82,7 @@
             <input type="text" id="username" name="username" required placeholder="የተጠቃሚ ስም ያስገቡ">
         </div>
         <div class="form-group">
-            <label for="password">የቀጠሮ ቃል (Password)</label>
+            <label for="password">የይለፍ ቃል (Password)</label>
             <input type="password" id="password" name="password" required placeholder="የይለፍ ቃል ያስገቡ">
         </div>
         <button type="submit" class="btn-submit">ይግቡ</button>
