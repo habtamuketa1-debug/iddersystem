@@ -1,0 +1,105 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="am">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>«በቅ.ሚካኤል ቤ.ክ የአካባቢ ልጆች መ.እድር» - የሂሳብ እና ኦዲት ሪፖርት</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f6f9; margin: 0; padding: 20px; color: #333; }
+        .container { max-width: 1000px; margin: auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .header-section { text-align: center; border-bottom: 2px solid #eee; padding-bottom: 20px; margin-bottom: 30px; }
+        .logo-img { width: 100px; height: auto; border-radius: 50%; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        h1 { color: #1f3a60; margin: 0; font-size: 24px; }
+        .subtitle { font-size: 18px; color: #555; margin-top: 5px; }
+        .cards { display: flex; justify-content: space-between; margin: 30px 0; gap: 20px; }
+        .card { flex: 1; padding: 20px; border-radius: 8px; color: white; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .income { background-color: #28a745; }
+        .expense { background-color: #dc3545; }
+        .balance { background-color: #007bff; }
+        .card h3 { margin: 0 0 10px 0; font-size: 16px; }
+        .card p { font-size: 22px; font-weight: bold; margin: 0; }
+        h2 { color: #1f3a60; margin-top: 40px; font-size: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: right; }
+        th { background-color: #1f3a60; color: white; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        .footer { text-align: center; margin-top: 40px; color: #778; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- የዕድሩ ሎጎ እና ርዕስ -->
+    <div class="header-section">
+        <img src="{% static 'images/logo.png' %}" alt="በቅ.ሚካኤል ቤ.ክ የአካባቢ ልጆች መ.እድር ሎጎ" class="logo-img">
+        <h1>«በቅ.ሚካኤል ቤ.ክ የአካባቢ ልጆች መ.እድር»</h1>
+        <div class="subtitle">የሂሳብ እና ኦዲት ማጠቃለያ ሪፖርት</div>
+    </div>
+
+    <div class="cards">
+        <div class="card income">
+            <h3>ጠቅላላ ገቢ (መዋጮ)</h3>
+            <p>{{ total_income }} ብር</p>
+        </div>
+        <div class="card expense">
+            <h3>ጠቅላላ ወጪ (የሀዘን ድጋፍ)</h3>
+            <p>{{ total_expense }} ብር</p>
+        </div>
+        <div class="card balance">
+            <h3>ቀሪ ሂሳብ (Net Balance)</h3>
+            <p>{{ net_balance }} ብር</p>
+        </div>
+    </div>
+
+    <h2>የመዋጮ ክፍያዎች ዝርዝር (Income History)</h2>
+    <table>
+        <tr>
+            <th>ቀን</th>
+            <th>ዓመተ ምሕረት</th>
+            <th>ወር</th>
+            <th>መጠን (ብር)</th>
+            <th>አባል</th>
+        </tr>
+        {% for c in contributions %}
+        <tr>
+            <td>{{ c.date_paid }}</td>
+            <td>{{ c.eth_year }}</td>
+            <td>{{ c.get_eth_month_display }}</td>
+            <td>{{ c.amount }} ብር</td>
+            <td>{{ c.member.full_name }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" style="text-align: center;">ምንም መዋጮ አልተመዘገበም።</td></tr>
+        {% endfor %}
+    </table>
+
+    <h2>የሀዘን ድጋፎች ወጪ ዝርዝር (Payout History)</h2>
+    <table>
+        <tr>
+            <th>ክስተት ቀን</th>
+            <th>የተሰጠ ድጋፍ (ብር)</th>
+            <th>ዝምድና</th>
+            <th>የሟቹ/የተቸገረው ስም</th>
+            <th>ጉዳዩ የደረሰበት አባል</th>
+        </tr>
+        {% for e in events %}
+        <tr>
+            <td>{{ e.event_date }}</td>
+            <td>{{ e.payout_amount }} ብር</td>
+            <td>{{ e.relationship }}</td>
+            <td>{{ e.deceased_name }}</td>
+            <td>{{ e.member.full_name }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" style="text-align: center;">ምንም የተጠናቀቀ የሀዘን ወጪ የለም።</td></tr>
+        {% endfor %}
+    </table>
+
+    <div class="footer">
+        <p>ይህ ሪፖርት በሲስተሙ በራስ ሰር የተዘጋጀ ነው። &copy; 2019 ዓ.ም - የዕድር አስተዳደር ሲስተም</p>
+    </div>
+</div>
+
+</body>
+</html>

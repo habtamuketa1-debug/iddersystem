@@ -1,0 +1,110 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="am">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>«በቅ.ሚካኤል ቤ.ክ የአካባቢ ልጆች መ.እድር» - የአባላት ፖርታል</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f6f9; margin: 0; padding: 20px; color: #333; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .header-section { text-align: center; border-bottom: 2px solid #eee; padding-bottom: 20px; margin-bottom: 25px; }
+        .logo-img { width: 90px; height: auto; border-radius: 50%; margin-bottom: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        h1 { color: #1f3a60; margin: 0; font-size: 22px; }
+        .subtitle { font-size: 16px; color: #555; margin-top: 5px; }
+        .search-box { text-align: center; margin: 25px 0; }
+        .search-box input { padding: 10px; width: 60%; font-size: 16px; border: 1px solid #ccc; border-radius: 5px; }
+        .search-box button { padding: 10px 20px; font-size: 16px; background-color: #1f3a60; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        .search-box button:hover { background-color: #152942; }
+        .profile-card { background: #e9ecef; padding: 20px; border-radius: 8px; margin-bottom: 20px; display: flex; align-items: center; gap: 20px; }
+        .profile-card img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid #1f3a60; }
+        .profile-info h3 { margin: 0 0 5px 0; color: #1f3a60; }
+        .profile-info p { margin: 4px 0; color: #555; }
+        h2 { color: #1f3a60; margin-top: 30px; font-size: 18px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: right; }
+        th { background-color: #1f3a60; color: white; }
+        .not-found { text-align: center; color: #dc3545; font-weight: bold; margin-top: 20px; }
+        .footer { text-align: center; margin-top: 40px; color: #778; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- የዕድሩ ሎጎ እና ርዕስ -->
+    <div class="header-section">
+        <img src="{% static 'images/logo.png' %}" alt="በቅ.ሚካኤል ቤ.ክ የአካባቢ ልጆች መ.እድር ሎጎ" class="logo-img">
+        <h1>«በቅ.ሚካኤል ቤ.ክ የአካባቢ ልጆች መ.እድር»</h1>
+        <div class="subtitle">የአባላት መረጃ ማጣሪያ ፖርታል</div>
+    </div>
+
+    <div class="search-box">
+        <form method="GET" action="">
+            <input type="text" name="phone" placeholder="ስልክ ቁጥርዎን ያስገቡ (ምሳሌ፡ 09...)" value="{{ phone }}">
+            <button type="submit">ፈልግ</button>
+        </form>
+    </div>
+
+    {% if member %}
+        <div class="profile-card">
+            {% if member.profile_picture %}
+                <img src="{{ member.profile_picture.url }}" alt="የአባል ፎቶ">
+            {% else %}
+                <div style="width: 80px; height: 80px; border-radius: 50%; background: #ccc; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #fff;">ፎቶ የለም</div>
+            {% endif %}
+            <div class="profile-info">
+                <h3>{{ member.full_name }}</h3>
+                <p><b>ስልክ ቁጥር፦</b> {{ member.phone_number }}</p>
+                <p><b>አድራሻ፦</b> {{ member.address }}</p>
+                <p><b>የአባል ሁኔታ፦</b> {{ member.get_status_display }}</p>
+                <p><b>የተቀላቀለበት ቀን፦</b> {{ member.joined_date }}</p>
+            </div>
+        </div>
+
+        <h2>የቤተሰብ አባላት ዝርዝር</h2>
+        <table>
+            <tr>
+                <th>ዝምድና</th>
+                <th>ስም</th>
+            </tr>
+            {% for f in family_members %}
+            <tr>
+                <td>{{ f.relationship }}</td>
+                <td>{{ f.full_name }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="2" style="text-align: center;">የተመዘገበ የቤተሰብ አባል የለም።</td></tr>
+            {% endfor %}
+        </table>
+
+        <h2>የመዋጮ ክፍያዎች ታሪክዎ</h2>
+        <table>
+            <tr>
+                <th>የተከፈለበት ቀን</th>
+                <th>ዓመተ ምሕረት</th>
+                <th>ወር</th>
+                <th>መጠን (ብር)</th>
+            </tr>
+            {% for c in contributions %}
+            <tr>
+                <td>{{ c.date_paid }}</td>
+                <td>{{ c.eth_year }}</td>
+                <td>{{ c.get_eth_month_display }}</td>
+                <td>{{ c.amount }} ብር</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4" style="text-align: center;">ምንም መዋጮ አልተመዘገበም።</td></tr>
+            {% endfor %}
+        </table>
+
+    {% elif phone %}
+        <div class="not-found">በዚህ ስልክ ቁጥር የተመዘገበ አባል አልተገኘም! እባክዎ ትክክለኛ ቁጥር ያስገቡ።</div>
+    {% endif %}
+
+    <div class="footer">
+        <p>&copy; 2019 ዓ.ም - በቅ.ሚካኤል ቤ.ክ የአካባቢ ልጆች መ.እድር</p>
+    </div>
+</div>
+
+</body>
+</html>

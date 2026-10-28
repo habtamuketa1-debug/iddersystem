@@ -1,0 +1,93 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="am">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>መግቢያ | በቅ.ሚካኤል ቤ.ክ የአካባቢ ልጆች መ.እድር</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .login-card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 380px;
+            text-align: center;
+        }
+        .logo-img {
+            width: 110px;
+            height: auto;
+            margin-bottom: 15px;
+        }
+        .title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1a365d;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: #333;
+        }
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+        .btn-submit {
+            width: 100%;
+            background-color: #0d6efd;
+            color: white;
+            padding: 11px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn-submit:hover {
+            background-color: #0b5ed7;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-card">
+    <!-- የተዘጋጀውን ሎጎ እዚህ እናሳያለን -->
+    <img src="{% static 'images/logo.png' %}" alt="የዕድሩ ሎጎ" class="logo-img">
+    <div class="title">በቅ.ሚካኤል ቤ.ክ የአካባቢ ልጆች መ.እድር</div>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="username">የተጠቃሚ ስም (Username)</label>
+            <input type="text" id="username" name="username" required placeholder="የተጠቃሚ ስም ያስገቡ">
+        </div>
+        <div class="form-group">
+            <label for="password">የቀጠሮ ቃል (Password)</label>
+            <input type="password" id="password" name="password" required placeholder="የይለፍ ቃል ያስገቡ">
+        </div>
+        <button type="submit" class="btn-submit">ይግቡ</button>
+    </form>
+</div>
+
+</body>
+</html>
