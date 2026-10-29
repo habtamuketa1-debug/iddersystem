@@ -89,3 +89,22 @@ def member_portal_view(request):
         'family_members': family_members,
     }
     return render(request, 'core/member_portal.html', context)
+
+
+# 4. አዲስ አባል መመዝገቢያ (Add Member View) - <--- አዲስ የተጨመረ
+def add_member_view(request):
+    if request.method == 'POST':
+        full_name = request.POST.get('full_name')
+        phone_number = request.POST.get('phone_number')
+        address = request.POST.get('address')
+        
+        # ዳታቤዝ ውስጥ መመዝገብ እና ሴቭ ማድረግ
+        Member.objects.create(
+            full_name=full_name,
+            phone_number=phone_number,
+            address=address,
+            is_active=True
+        )
+        return redirect('dashboard')
+        
+    return render(request, 'core/add_member.html')
