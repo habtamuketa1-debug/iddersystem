@@ -6,74 +6,131 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>መግቢያ | በቅ.ሚካኤል ቤ.ክ የአካባቢ ልጆች መ.እድር</title>
     <style>
+        :root {
+            --primary-color: #1e3a8a;
+            --primary-hover: #1e40af;
+            --accent-color: #d97706;
+            --bg-gradient: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
+            --card-bg: #ffffff;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f6f9;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-gradient);
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
         }
+
         .login-card {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            background: var(--card-bg);
+            padding: 40px 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08), 0 4px 10px rgba(0, 0, 0, 0.03);
             width: 100%;
-            max-width: 380px;
+            max-width: 400px;
             text-align: center;
+            border-top: 5px solid var(--primary-color);
+            animation: fadeIn 0.6s ease-in-out;
         }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .logo-container {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
         .logo-img {
-            width: 110px;
-            height: auto;
-            margin-bottom: 15px;
+            width: 75px;
+            height: 75px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 3px solid #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            background-color: #ffffff;
         }
+
         .title {
-            font-size: 18px;
-            font-weight: bold;
-            color: #1a365d;
-            margin-bottom: 20px;
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 25px;
+            line-height: 1.4;
         }
+
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             text-align: left;
         }
+
         label {
             display: block;
-            margin-bottom: 5px;
-            font-size: 14px;
-            color: #333;
+            margin-bottom: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
         }
+
         input[type="text"], input[type="password"] {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
+            padding: 12px 14px;
+            border: 1.5px solid #d1d5db;
+            border-radius: 8px;
             box-sizing: border-box;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background-color: #f9fafb;
         }
+
+        input[type="text"]:focus, input[type="password"]:focus {
+            border-color: var(--primary-color);
+            background-color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.15);
+            outline: none;
+        }
+
         .btn-submit {
             width: 100%;
-            background-color: #0d6efd;
+            background-color: var(--primary-color);
             color: white;
-            padding: 11px;
+            padding: 12px;
             border: none;
-            border-radius: 6px;
-            font-size: 16px;
+            border-radius: 8px;
+            font-size: 15px;
             cursor: pointer;
-            font-weight: bold;
+            font-weight: 700;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            box-shadow: 0 4px 10px rgba(30, 58, 138, 0.2);
+            margin-top: 10px;
         }
+
         .btn-submit:hover {
-            background-color: #0b5ed7;
+            background-color: var(--primary-hover);
+        }
+
+        .btn-submit:active {
+            transform: scale(0.98);
         }
     </style>
 </head>
 <body>
 
 <div class="login-card">
-    <!-- ሎጎው ከላይ በዲዛይኑ መሰረት በትክክል እንዲታይ ተደረገ -->
-    <img src="{% static 'images/logo.png' %}" alt="የዕድሩ ሎጎ" style="height: 70px;">
-    <div class="title">በቅ.ሚካኤል ቤ.ክ የአካባቢ ልጆች መ.እድር</div>
+    <!-- የዕድር ሎጎ በክብ ቅርጽ እና በውብ ሻዶ ዲዛይን -->
+    <div class="logo-container">
+        <img src="{% static 'core/images/logo.png' %}" alt="የዕድሩ ሎጎ" class="logo-img">
+    </div>
+    
+    <div class="title">«በቅ.ሚካኤል ቤ.ክ የአካባቢ ልጆች መ.እድር»</div>
 
     <form method="post">
         {% csrf_token %}
