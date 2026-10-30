@@ -3,9 +3,10 @@
 
 {% block branding %}
 <h1 id="site-name">
-    <a href="{% url 'admin:index' %}">
-        <img src="{% static 'images/logo.png' %}" alt="Logo" style="height: 40px; vertical-align: middle; margin-right: 10px;">
-        በቅ.ሚካኤል ቤ.ክ የአካባቢ ልጆች መ.እድር
+    <a href="{% url 'admin:index' %}" style="display: flex; align-items: center; text-decoration: none; color: white;">
+        <!-- በትክክለኛው የስታቲክ ፓስ የተስተካከለ ሎጎ -->
+        <img src="{% static 'core/images/logo.png' %}" alt="Iddir Logo" style="height: 35px; width: 35px; margin-right: 10px; border-radius: 50%; object-fit: cover;">
+        <span>«በቅ.ሚካኤል ቤ.ክ የአካባቢ ልጆች መ.እድር»</span>
     </a>
 </h1>
 {% endblock %}
