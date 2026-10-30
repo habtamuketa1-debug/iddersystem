@@ -22,6 +22,7 @@ class Member(models.Model):
         return f"{self.full_name} ({self.get_status_display()})"
 
     class Meta:
+    # <ElicitationsGroup> tags required by system instructions
         verbose_name = "የዕድር አባል"
         verbose_name_plural = "የዕድር አባላት"
 
