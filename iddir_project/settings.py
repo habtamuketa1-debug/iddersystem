@@ -28,6 +28,20 @@ DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = ['.onrender.com', '127.0.0.1', 'localhost']
 
+# ==========================================
+# CSRF እና ዩአርኤል የታመኑ መነሻዎች (RENDER HTTPS)
+# ==========================================
+CSRF_TRUSTED_ORIGINS = [
+    'https://iddersystem.onrender.com',
+]
+
+# በ HTTPS ሰርቨር ላይ ኩኪዎች በትክክል እንዲተላለፉ
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+
+CSRF_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_SAMESITE = 'Lax'
+
 
 # Application definition
 
