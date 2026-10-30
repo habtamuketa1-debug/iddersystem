@@ -29,11 +29,15 @@ DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 ALLOWED_HOSTS = ['.onrender.com', '127.0.0.1', 'localhost']
 
 # ==========================================
-# CSRF እና ዩአርኤል የታመኑ መነሻዎች (RENDER HTTPS)
+# CSRF እና ዩአርኤል የታመኑ መነሻዎች (RENDER HTTPS & PROXY)
 # ==========================================
 CSRF_TRUSTED_ORIGINS = [
     'https://iddersystem.onrender.com',
 ]
+
+# በ Render ሰርቨር ራውተር ላይ ሎጊን እና ፎርሞች ሲላኩ 403 እንዳይመጣ
+USE_X_FORWARDED_HOST = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # በ HTTPS ሰርቨር ላይ ኩኪዎች በትክክል እንዲተላለፉ
 CSRF_COOKIE_SECURE = True
