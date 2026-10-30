@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 
 from pathlib import Path
 import os
-import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -77,15 +76,18 @@ WSGI_APPLICATION = 'iddir_project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
 
-# Fallback Neon Database URL in case environment variable is missing
-FALLBACK_NEON_URL = "postgresql://neondb_owner:npg_kdMRvInAS3g2@ep-spring-glade-b5ky1kd1.c-7.us-east-2.aws.neon.tech/neondb?sslmode=require"
-
 DATABASES = {
-    'default': dj_database_url.config(
-        default=os.environ.get('DATABASE_URL', FALLBACK_NEON_URL),
-        conn_max_age=600,
-        ssl_require=True
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'neondb',
+        'USER': 'neondb_owner',
+        'PASSWORD': 'npg_kdMRvInAS3g2',
+        'HOST': 'ep-spring-glade-b5ky1kd1.c-7.us-east-2.aws.neon.tech',
+        'PORT': '5432',
+        'OPTIONS': {
+            'sslmode': 'require',
+        },
+    }
 }
 
 
