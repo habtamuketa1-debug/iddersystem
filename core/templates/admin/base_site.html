@@ -2,9 +2,39 @@
 {% load static %}
 
 {% block branding %}
-<h1 id="site-name">
-    <a href="{% url 'admin:index' %}" style="display: flex; align-items: center; text-decoration: none; color: white;">
-        <img src="{% static 'images/logo.png' %}" alt="Iddir Logo" style="height: 35px; width: 35px; margin-right: 10px; border-radius: 50%; object-fit: cover;">
+<style>
+    /* የዕድር አድሚን ሄደር ውብ እና ዘመናዊ ዲዛይን */
+    #site-name a {
+        display: flex !important;
+        align-items: center !important;
+        text-decoration: none !important;
+        color: #ffffff !important;
+        font-weight: 700 !important;
+        font-size: 16px !important;
+        letter-spacing: 0.5px;
+    }
+    
+    /* የሎጎ ምስል ዲዛይን እና ከርቭ (Shadow & Border) */
+    .iddir-admin-logo {
+        width: 42px !important;
+        height: 42px !important;
+        object-fit: cover !important;
+        border-radius: 50% !important;
+        border: 2px solid rgba(255, 255, 255, 0.8);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        margin-right: 12px !important;
+        background-color: #ffffff;
+        transition: transform 0.3s ease;
+    }
+
+    .iddir-admin-logo:hover {
+        transform: scale(1.05);
+    }
+</style>
+
+<h1 id="site-name" style="margin: 0; padding: 0;">
+    <a href="{% url 'admin:index' %}">
+        <img src="{% static 'core/images/logo.png' %}" alt="Iddir Logo" class="iddir-admin-logo">
         <span>«በቅ.ሚካኤል ቤ.ክ የአካባቢ ልጆች መ.እድር»</span>
     </a>
 </h1>
