@@ -58,7 +58,7 @@ ROOT_URLCONF = 'iddir_project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'core', 'templates')],  # <--- እዚህ ጋር የኮር ቴምፕሌት ፎልደር እንዲነበብ ተደረገ
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

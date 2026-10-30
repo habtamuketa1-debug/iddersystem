@@ -4,8 +4,7 @@
 {% block branding %}
 <h1 id="site-name">
     <a href="{% url 'admin:index' %}" style="display: flex; align-items: center; text-decoration: none; color: white;">
-        <!-- ሎጎውን በቀጥታ በስታቲክ ሊንክ ፋንታ ከኮድ ጋር ለማሳየት -->
-        <div style="background-image: url('{% static 'core/images/logo.png' %}'); width: 35px; height: 35px; background-size: cover; background-position: center; border-radius: 50%; margin-right: 10px; display: inline-block;"></div>
+        <img src="{% static 'images/logo.png' %}" alt="Iddir Logo" style="height: 35px; width: 35px; margin-right: 10px; border-radius: 50%; object-fit: cover;">
         <span>«በቅ.ሚካኤል ቤ.ክ የአካባቢ ልጆች መ.እድር»</span>
     </a>
 </h1>
