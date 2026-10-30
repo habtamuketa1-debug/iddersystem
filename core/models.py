@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from cloudinary.models import CloudinaryField
 
 # የአባል ሁኔታ ምርጫዎች (Member Status Choices)
 MEMBER_STATUS_CHOICES = [
@@ -13,7 +14,10 @@ class Member(models.Model):
     full_name = models.CharField(max_length=150, verbose_name="ሙሉ ስም")
     phone_number = models.CharField(max_length=15, unique=True, verbose_name="ስልክ ቁጥር")
     address = models.CharField(max_length=250, verbose_name="አድራሻ (ቀበሌ/ወረዳ)")
-    profile_picture = models.ImageField(upload_to='member_photos/', blank=True, null=True, verbose_name="የአባል መገለጫ ፎቶ")
+    
+    # ፎቶዎችን በ Render ሰርቨር ላይ ሳይጠፉ በ Cloudinary እንዲቀመጡ ማድረግ
+    profile_picture = CloudinaryField('image', blank=True, null=True)
+    
     status = models.CharField(max_length=20, choices=MEMBER_STATUS_CHOICES, default='ACTIVE', verbose_name="የአባል ሁኔታ")
     joined_date = models.DateField(default=timezone.now, verbose_name="የተቀላቀለበት ቀን")
     is_active = models.BooleanField(default=True, verbose_name="ንቁ ነው?")
@@ -22,7 +26,6 @@ class Member(models.Model):
         return f"{self.full_name} ({self.get_status_display()})"
 
     class Meta:
-    # <ElicitationsGroup> tags required by system instructions
         verbose_name = "የዕድር አባል"
         verbose_name_plural = "የዕድር አባላት"
 
