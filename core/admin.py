@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 from .models import Member, FamilyMember, Contribution, IddirEvent
 from .forms import MemberAdminForm  # <--- 1. የኢትዮጵያ ፎርሙን ማስገባት
+from ethiopian_date import EthiopianDateConverter  # <--- የኢትዮጵያ ቀን መቀየሪያ
 
 # 1. የአድሚን ፓነል ርዕሶችን በዕድራችን ስም ማበጀት
 admin.site.site_header = "«በቅ.ሚካኤል ቤ.ክ የአካባቢ ልጆች መ.እድር» - አስተዳደር ፓነል"
@@ -13,9 +14,9 @@ admin.site.index_title = "ወደ ዕድር አስተዳደር ዳሽቦርድ �
 class MemberAdmin(admin.ModelAdmin):
     form = MemberAdminForm  # <--- 2. ፎርሙን ከዚህ ጋር ማያያዝ
     
-    list_display = ('profile_preview', 'full_name', 'phone_number', 'address', 'status', 'joined_date')
+    list_display = ('profile_preview', 'full_name', 'phone_number', 'address', 'status', 'formatted_joined_date')
     search_fields = ('full_name', 'phone_number')
-    list_filter = ('status', 'joined_date')
+    list_filter = ('status',)
 
     # ፎቶውን በአድሚን ሰንጠረዥ ውስጥ በክብ ቅርጽ ለማሳየት
     def profile_preview(self, obj):
@@ -24,6 +25,20 @@ class MemberAdmin(admin.ModelAdmin):
         return "ፎቶ የለም"
     
     profile_preview.short_description = "መገለጫ ፎቶ"
+
+    # የተመዘገበበትን ቀን ወደ ኢትዮጵያ አቆጣጠር ቀይሮ በአድሚን ሰንጠረዥ ውስጥ ለማሳየት
+    def formatted_joined_date(self, obj):
+        if obj.joined_date:
+            try:
+                eth_year, eth_month, eth_day = EthiopianDateConverter.to_ethiopian(
+                    obj.joined_date.year, obj.joined_date.month, obj.joined_date.day
+                )
+                return f"{eth_day}/{eth_month}/{eth_year}"
+            except Exception:
+                return obj.joined_date
+        return "-"
+    
+    formatted_joined_date.short_description = "የተቀላቀለበት ቀን (ኢትዮጵያ)"
 
 
 @admin.register(FamilyMember)
