@@ -57,7 +57,8 @@
                 <p><b>ስልክ ቁጥር፦</b> {{ member.phone_number }}</p>
                 <p><b>አድራሻ፦</b> {{ member.address }}</p>
                 <p><b>የአባል ሁኔታ፦</b> {{ member.get_status_display }}</p>
-                <p><b>የተቀላቀለበት ቀን፦</b> {{ member.joined_date }}</p>
+                <!-- የተስተካከለ፡ የተቀላቀለበት ቀን በኢትዮጵያ አቆጣጠር -->
+                <p><b>የተቀላቀለበት ቀን፦</b> {{ member.formatted_joined_date_eth }}</p>
             </div>
         </div>
 
@@ -87,7 +88,8 @@
             </tr>
             {% for c in contributions %}
             <tr>
-                <td>{{ c.date_paid }}</td>
+                <!-- የተስተካከለ፡ የተከፈለበት ቀን በኢትዮጵያ አቆጣጠር -->
+                <td>{{ c.formatted_date_paid_eth }}</td>
                 <td>{{ c.eth_year }}</td>
                 <td>{{ c.get_eth_month_display }}</td>
                 <td>{{ c.amount }} ብር</td>

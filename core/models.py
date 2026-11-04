@@ -1,6 +1,14 @@
 from django.db import models
 from django.utils import timezone
 from cloudinary.models import CloudinaryField
+from ethiopian_date import EthiopianDateConverter
+
+# የኢትዮጵያ ወራት ስም መዝገብ (ለድረ-ገጽ ማሳያ)
+ETHIOPIAN_MONTH_DICT = {
+    1: "መስከረም", 2: "ጥቅምት", 3: "ህዳር", 4: "ታህሳስ",
+    5: "ጥር", 6: "የካቲት", 7: "መጋቢት", 8: "ሚያዝያ",
+    9: "ግንቦት", 10: "ሰኔ", 11: "ሐምሌ", 12: "ነሐሴ", 13: "ጳጉሜ"
+}
 
 # የአባል ሁኔታ ምርጫዎች (Member Status Choices)
 MEMBER_STATUS_CHOICES = [
@@ -24,6 +32,18 @@ class Member(models.Model):
 
     def __str__(self):
         return f"{self.full_name} ({self.get_status_display()})"
+
+    # በድረ-ገጽ (Frontend) ላይ የተቀላቀለበትን ቀን በኢትዮጵያ አቆጣጠር ለማሳየት
+    def formatted_joined_date_eth(self):
+        if not self.joined_date:
+            return "-"
+        try:
+            dt = self.joined_date
+            ey, em, ed = EthiopianDateConverter.to_ethiopian(dt.year, dt.month, dt.day)
+            m_name = ETHIOPIAN_MONTH_DICT.get(int(em), str(em))
+            return f"{m_name} {ed}፣ {ey} ዓ.ም"
+        except Exception:
+            return str(self.joined_date)
 
     class Meta:
         verbose_name = "የዕድር አባል"
@@ -74,6 +94,18 @@ class Contribution(models.Model):
 
     def __str__(self):
         return f"{self.member.full_name} - {self.amount} ብር ({self.get_eth_month_display()} {self.eth_year} ዓ.ም)"
+
+    # በድረ-ገጽ (Frontend) ላይ የተከፈለበትን ቀን በኢትዮጵያ አቆጣጠር ለማሳየት
+    def formatted_date_paid_eth(self):
+        if not self.date_paid:
+            return "-"
+        try:
+            dt = self.date_paid
+            ey, em, ed = EthiopianDateConverter.to_ethiopian(dt.year, dt.month, dt.day)
+            m_name = ETHIOPIAN_MONTH_DICT.get(int(em), str(em))
+            return f"{m_name} {ed}፣ {ey} ዓ.ም"
+        except Exception:
+            return str(self.date_paid)
 
     class Meta:
         verbose_name = "የመዋጮ ክፍያ"
