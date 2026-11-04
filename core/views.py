@@ -2,6 +2,26 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.db.models import Sum
 from .models import Member, Contribution, IddirEvent, FamilyMember
+from ethiopian_date import EthiopianDateConverter  # <--- የኢትዮጵያ ካላንደር ፓኬጅ ተጨምሯል
+
+
+# ረዳት ፉንክሽን (Helper Function): ግሬጎሪያን ቀንን ወደ ኢትዮጵያ ቀን የሚቀይር
+def format_to_ethiopian(gregorian_date):
+    if not gregorian_date:
+        return ""
+    try:
+        eth_year, eth_month, eth_day = EthiopianDateConverter.to_ethiopian(
+            gregorian_date.year, gregorian_date.month, gregorian_date.day
+        )
+        months = [
+            "መስከረም", "ጥቅምት", "ህዳር", "ታህሳስ", "ጥር", "የካቲት",
+            "መጋቢት", "ሚያዝያ", "ግንቦት", "ሰኔ", "ሐምሌ", "ነሐሴ", "ጳጉሜ"
+        ]
+        month_name = months[eth_month - 1] if 1 <= eth_month <= len(months) else str(eth_month)
+        return f"{month_name} {eth_day}, {eth_year}"
+    except Exception:
+        return str(gregorian_date)
+
 
 # 0. የሎጊን ፕላትፎርም (Custom Login View)
 def custom_login_view(request):
@@ -29,7 +49,12 @@ def iddir_dashboard(request):
     pending_events = IddirEvent.objects.filter(is_settled=False).count()
     
     recent_members = Member.objects.order_by('-joined_date')[:5]
+    for m in recent_members:
+        m.ethiopian_joined = format_to_ethiopian(m.joined_date)
+
     recent_contributions = Contribution.objects.order_by('-date_paid')[:5]
+    for c in recent_contributions:
+        c.ethiopian_date = format_to_ethiopian(c.date_paid)
 
     context = {
         'total_members': total_members,
@@ -55,7 +80,12 @@ def financial_report_view(request):
 
     # የክፍያዎች እና የሀዘን መዝገቦች ዝርዝር
     contributions = Contribution.objects.all().order_by('-date_paid')
+    for item in contributions:
+        item.ethiopian_date = format_to_ethiopian(item.date_paid)
+
     events = IddirEvent.objects.filter(is_settled=True).order_by('-event_date')
+    for event in events:
+        event.ethiopian_date = format_to_ethiopian(event.event_date)
 
     context = {
         'total_income': total_income,
@@ -78,6 +108,8 @@ def member_portal_view(request):
         try:
             member = Member.objects.get(phone_number=phone)
             contributions = Contribution.objects.filter(member=member).order_by('-date_paid')
+            for c in contributions:
+                c.ethiopian_date = format_to_ethiopian(c.date_paid)
             family_members = FamilyMember.objects.filter(member=member)
         except Member.DoesNotExist:
             member = None
@@ -91,7 +123,7 @@ def member_portal_view(request):
     return render(request, 'core/member_portal.html', context)
 
 
-# 4. አዲስ አባል መመዝገቢያ (Add Member View) - <--- አዲስ የተጨመረ
+# 4. አዲስ አባል መመዝገቢያ (Add Member View)
 def add_member_view(request):
     if request.method == 'POST':
         full_name = request.POST.get('full_name')
