@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 from .models import Member, FamilyMember, Contribution, IddirEvent
-from .forms import MemberAdminForm  # <--- 1. የኢትዮጵያ ፎርሙን ማስገባት
+from .forms import MemberAdminForm, ContributionAdminForm  # <--- ሁለቱንም ፎርሞች ማስገባት
 from ethiopian_date import EthiopianDateConverter  # <--- የኢትዮጵያ ቀን መቀየሪያ
 
 # የኢትዮጵያ ወራት ስም ዝርዝር
@@ -19,7 +19,7 @@ admin.site.index_title = "ወደ ዕድር አስተዳደር ዳሽቦርድ �
 
 @admin.register(Member)
 class MemberAdmin(admin.ModelAdmin):
-    form = MemberAdminForm  # <--- 2. ፎርሙን ከዚህ ጋር ማያያዝ
+    form = MemberAdminForm  # <--- 2. የ miembro ፎርሙን ከዚህ ጋር ማያያዝ
     
     # ሠንጠረዡ ላይ የፈረንሳይኛውን 'joined_date' በማጥፋት የኢትዮጵያውን 'formatted_joined_date' ብቻ ማሳየት
     list_display = ('profile_preview', 'full_name', 'phone_number', 'address', 'status', 'formatted_joined_date')
@@ -66,10 +66,12 @@ class FamilyMemberAdmin(admin.ModelAdmin):
 
 @admin.register(Contribution)
 class ContributionAdmin(admin.ModelAdmin):
-    # 'eth_month' ምትክ 'formatted_eth_month' በመጠቀም የወሩን ስም በሰንጠረዥ ማሳየት
+    form = ContributionAdminForm  # <--- የመዋጮ ፎርሙን ከዚህ ጋር ማያያዝ
+    
     list_display = ('member', 'amount', 'formatted_eth_month', 'eth_year', 'date_paid')
     search_fields = ('member__full_name',)
     list_filter = ('eth_month', 'eth_year', 'date_paid')
+    exclude = ('date_paid',)  # ፋርሙ ላይ የፈረንሳይኛውን ቀን እንዳያሳየው መደበቅ
 
     # የኢትዮጵያ ወር ቁጥርን ወደ ጽሁፍ (ስም) ቀይሮ ለማሳየት
     def formatted_eth_month(self, obj):

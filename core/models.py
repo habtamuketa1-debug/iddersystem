@@ -19,10 +19,7 @@ class Member(models.Model):
     profile_picture = CloudinaryField('image', blank=True, null=True)
     
     status = models.CharField(max_length=20, choices=MEMBER_STATUS_CHOICES, default='ACTIVE', verbose_name="የአባል ሁኔታ")
-    
-    # እዚህ ላይ default=timezone.now መጥፋቱን ልብ ይበሉ! (ፎርሙ የሚልከውን ቀን እንዲቀበል)
     joined_date = models.DateField(null=True, blank=True, verbose_name="የተቀላቀለበት ቀን")
-    
     is_active = models.BooleanField(default=True, verbose_name="ንቁ ነው?")
 
     def __str__(self):
@@ -71,7 +68,9 @@ class Contribution(models.Model):
     amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="የተከፈለ መጠን (ብር)")
     eth_month = models.CharField(max_length=20, choices=ETHIOPIAN_MONTHS, verbose_name="የኢትዮጵያ ወር")
     eth_year = models.CharField(max_length=10, default="2019", verbose_name="ዓመተ ምሕረት")
-    date_paid = models.DateField(default=timezone.now, verbose_name="የተከፈለበት ቀን")
+    
+    # ፎርሙ ከኢትዮጵያ ቀን ወደ ግሪጎሪያን ቀይሮ በትክክል እንዲመዘግብ blank እና null ተፈቅዶለታል
+    date_paid = models.DateField(null=True, blank=True, verbose_name="የተከፈለበት ቀን")
 
     def __str__(self):
         return f"{self.member.full_name} - {self.amount} ብር ({self.get_eth_month_display()} {self.eth_year} ዓ.ም)"
