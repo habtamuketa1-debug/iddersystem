@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 from .models import Member, FamilyMember, Contribution, IddirEvent
-from .forms import MemberAdminForm, ContributionAdminForm  # <--- ሁለቱንም ፎርሞች ማስገባት
+from .forms import MemberAdminForm, ContributionAdminForm, IddirEventAdminForm  # <--- ሦስቱንም ፎርሞች ማስገባት
 from ethiopian_date import EthiopianDateConverter  # <--- የኢትዮጵያ ቀን መቀየሪያ
 
 # የኢትዮጵያ ወራት ስም ዝርዝር
@@ -11,7 +11,7 @@ ETHIOPIAN_MONTH_NAMES = {
     9: "ግንቦት", 10: "ሰኔ", 11: "ሐምሌ", 12: "ነሐሴ", 13: "ጳጉሜ"
 }
 
-# 1. የአድሚን ፓነል ርዕሶችን በዕድራችን ስም ማበጀት
+# የአድሚን ፓነል ርዕሶችን በዕድራችን ስም ማበጀት
 admin.site.site_header = "«በቅ.ሚካኤል ቤ.ክ የአካባቢ ልጆች መ.እድር» - አስተዳደር ፓነል"
 admin.site.site_title = "የዕድር አስተዳደር"
 admin.site.index_title = "ወደ ዕድር አስተዳደር ዳሽቦርድ እንኳን በደህና መጡ"
@@ -19,14 +19,11 @@ admin.site.index_title = "ወደ ዕድር አስተዳደር ዳሽቦርድ �
 
 @admin.register(Member)
 class MemberAdmin(admin.ModelAdmin):
-    form = MemberAdminForm  # <--- አባላትን መመዝገቢያ ፎርም
-    
-    # ሠንጠረዡ ላይ የፈረንሳይኛውን 'joined_date' በማጥፋት የኢትዮጵያውን 'formatted_joined_date' ብቻ ማሳየት
+    form = MemberAdminForm  
     list_display = ('profile_preview', 'full_name', 'phone_number', 'address', 'status', 'formatted_joined_date')
     search_fields = ('full_name', 'phone_number')
     list_filter = ('status',)
 
-    # ፎቶውን በአድሚን ሰንጠረዥ ውስጥ በክብ ቅርጽ ለማሳየት
     def profile_preview(self, obj):
         if obj.profile_picture:
             return format_html('<img src="{}" width="40" height="40" style="border-radius: 50%; object-fit: cover;" />', obj.profile_picture.url)
@@ -34,14 +31,12 @@ class MemberAdmin(admin.ModelAdmin):
     
     profile_preview.short_description = "መገለጫ ፎቶ"
 
-    # የተመዘገበበትን ቀን ወደ ኢትዮጵያ አቆጣጠር እና በወር ስም ቀይሮ በአድሚን ሰንጠረዥ ውስጥ ለማሳየት
     def formatted_joined_date(self, obj):
         if obj.joined_date:
             try:
                 dt = obj.joined_date
                 eth_date = EthiopianDateConverter.to_ethiopian(dt.year, dt.month, dt.day)
                 
-                # የተመለሰው መረጃ ቅርጽ ታፕል፣ ሊስት ወይም ኦብጀክት መሆኑን በራሱ ለይቶ ማስተናገድ
                 if isinstance(eth_date, (list, tuple)) and len(eth_date) >= 3:
                     eth_year, eth_month, eth_day = eth_date[0], eth_date[1], eth_date[2]
                 elif hasattr(eth_date, 'year') and hasattr(eth_date, 'month') and hasattr(eth_date, 'day'):
@@ -66,15 +61,13 @@ class FamilyMemberAdmin(admin.ModelAdmin):
 
 @admin.register(Contribution)
 class ContributionAdmin(admin.ModelAdmin):
-    form = ContributionAdminForm  # <--- የመዋጮ ክፍያ ፎርም
+    form = ContributionAdminForm  
     
-    # ሰንጠረዡ ላይ የፈረንሳይኛውን 'date_paid' በማጥፋት የኢትዮጵያውን 'formatted_date_paid' ማሳየት
     list_display = ('member', 'amount', 'formatted_eth_month', 'eth_year', 'formatted_date_paid')
     search_fields = ('member__full_name',)
     list_filter = ('eth_month', 'eth_year', 'date_paid')
-    exclude = ('date_paid',)  # ፎርሙ ላይ የፈረንሳይኛውን ቀን እንዳያሳየው መደበቅ
+    exclude = ('date_paid',)
 
-    # የኢትዮጵያ ወር ቁጥርን ወደ ጽሁፍ (ስም) ቀይሮ ለማሳየት
     def formatted_eth_month(self, obj):
         try:
             return ETHIOPIAN_MONTH_NAMES.get(int(obj.eth_month), obj.eth_month)
@@ -83,7 +76,6 @@ class ContributionAdmin(admin.ModelAdmin):
             
     formatted_eth_month.short_description = "የኢትዮጵያ ወር"
 
-    # የተከፈለበትን ቀን ወደ ኢትዮጵያ አቆጣጠር ቀይሮ በሰንጠረዥ ማሳየት
     def formatted_date_paid(self, obj):
         if obj.date_paid:
             try:
@@ -108,6 +100,30 @@ class ContributionAdmin(admin.ModelAdmin):
 
 @admin.register(IddirEvent)
 class IddirEventAdmin(admin.ModelAdmin):
-    list_display = ('member', 'deceased_name', 'relationship', 'event_date', 'payout_amount', 'is_settled')
+    form = IddirEventAdminForm  # <--- የሀዘን መዝገብ ፎርምን ማያያዝ
+    
+    list_display = ('member', 'deceased_name', 'relationship', 'formatted_event_date', 'payout_amount', 'is_settled')
     search_fields = ('member__full_name', 'deceased_name')
     list_filter = ('is_settled', 'event_date')
+    exclude = ('event_date',)  # የግሪጎሪያን ቀን ፊልድ ከቅጹ መደበቅ
+
+    def formatted_event_date(self, obj):
+        if obj.event_date:
+            try:
+                dt = obj.event_date
+                eth_date = EthiopianDateConverter.to_ethiopian(dt.year, dt.month, dt.day)
+                
+                if isinstance(eth_date, (list, tuple)) and len(eth_date) >= 3:
+                    eth_year, eth_month, eth_day = eth_date[0], eth_date[1], eth_date[2]
+                elif hasattr(eth_date, 'year') and hasattr(eth_date, 'month') and hasattr(eth_date, 'day'):
+                    eth_year, eth_month, eth_day = eth_date.year, eth_date.month, eth_date.day
+                else:
+                    eth_year, eth_month, eth_day = eth_date[0], eth_date[1], eth_date[2]
+
+                month_name = ETHIOPIAN_MONTH_NAMES.get(int(eth_month), str(eth_month))
+                return f"{month_name} {eth_day}፣ {eth_year} ዓ.ም"
+            except Exception as e:
+                return f"ስህተት: {e}"
+        return "-"
+    
+    formatted_event_date.short_description = "የክስተቱ ቀን (ኢትዮጵያ)"

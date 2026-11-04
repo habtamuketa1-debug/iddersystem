@@ -85,7 +85,10 @@ class IddirEvent(models.Model):
     member = models.ForeignKey(Member, on_delete=models.CASCADE, related_name='events', verbose_name="ጉዳዩ የደረሰበት አባል")
     deceased_name = models.CharField(max_length=150, verbose_name="የሞተው/የተቸገረው ሰው ስም")
     relationship = models.CharField(max_length=50, verbose_name="ከአባሉ ጋር ያለው ዝምድና")
-    event_date = models.DateField(verbose_name="ክስተቱ/ሀዘኑ የደረሰበት ቀን")
+    
+    # የኢትዮጵያ ቀን ፎርም በትክክል እንዲሰራ blank እና null ተፈቅዶለታል
+    event_date = models.DateField(null=True, blank=True, verbose_name="ክስተቱ/ሀዘኑ የደረሰበት ቀን")
+    
     payout_amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="የተሰጠ የገንዘብ ድጋፍ (ብር)")
     is_settled = models.BooleanField(default=False, verbose_name="ድጋፉ ተሰጥቶ ተጠናቋል?")
 
