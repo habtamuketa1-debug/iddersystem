@@ -1,20 +1,25 @@
 from django import forms
+from datetime import date
 from .models import Member, Contribution, ETHIOPIAN_MONTHS
 from ethiopian_date import EthiopianDateConverter  # የኢትዮጵያ ቀን መቀየሪያ ቤተ-መጽሐፍት
 
 class MemberAdminForm(forms.ModelForm):
-    # የኢትዮጵያ ቀን መራጫ ፊልዶች
-    eth_day = forms.IntegerField(label="የኢትዮጵያ ቀን (1-30)", min_value=1, max_value=30, initial=1)
-    eth_month = forms.ChoiceField(choices=ETHIOPIAN_MONTHS, label="የኢትዮጵያ ወር")
-    eth_year = forms.IntegerField(label="ዓመተ ምሕረት", initial=2016)
+    # ዛሬ ያለንበትን የኢትዮጵያ ቀን በራስሰር አሰልቶ ለመጀመሪያ ዴፍልትነት (initial) መጠቀም
+    try:
+        t_year, t_month, t_day = EthiopianDateConverter.to_ethiopian(
+            date.today().year, date.today().month, date.today().day
+        )
+    except Exception:
+        t_year, t_month, t_day = 2019, 3, 25  # ፋልባክ (fallback) ቀን
+
+    # የኢትዮጵያ ቀን መራጫ ፊልዶች (በአሁኑ ቀን ተሞልተው የሚመጡ)
+    eth_day = forms.IntegerField(label="የኢትዮጵያ ቀን (1-30)", min_value=1, max_value=30, initial=t_day)
+    eth_month = forms.ChoiceField(choices=ETHIOPIAN_MONTHS, label="የኢትዮጵያ ወር", initial=str(t_month))
+    eth_year = forms.IntegerField(label="ዓመተ ምሕረት", initial=t_year)
 
     class Meta:
         model = Member
         exclude = ['joined_date']
-
-    def clean(self):
-        cleaned_data = super().clean()
-        return cleaned_data
 
     def save(self, commit=True):
         instance = super().save(commit=False)
@@ -41,8 +46,6 @@ class MemberAdminForm(forms.ModelForm):
 
                 # EthiopianDateConverter ተጠቅሞ ወደ ግሪጎሪያን ቀን መቀየር
                 gregorian_date = EthiopianDateConverter.to_gregorian(year_int, month_int, day_int)
-                
-                # የተገኘውን ትክክለኛ ቀን ለኢንስታንሱ መስጠት
                 instance.joined_date = gregorian_date
                 
             except Exception as e:
