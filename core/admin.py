@@ -39,10 +39,17 @@ class MemberAdmin(admin.ModelAdmin):
         if obj.joined_date:
             try:
                 dt = obj.joined_date
-                eth_year, eth_month, eth_day = EthiopianDateConverter.to_ethiopian(
-                    dt.year, dt.month, dt.day
-                )
-                month_name = ETHIOPIAN_MONTH_NAMES.get(eth_month, str(eth_month))
+                eth_date = EthiopianDateConverter.to_ethiopian(dt.year, dt.month, dt.day)
+                
+                # የተመለሰው መረጃ ቅርጽ (Format) ታፕል፣ ሊስት ወይም ኦብጀክት መሆኑን በራሱ ለይቶ ማስተናገድ
+                if isinstance(eth_date, (list, tuple)) and len(eth_date) >= 3:
+                    eth_year, eth_month, eth_day = eth_date[0], eth_date[1], eth_date[2]
+                elif hasattr(eth_date, 'year') and hasattr(eth_date, 'month') and hasattr(eth_date, 'day'):
+                    eth_year, eth_month, eth_day = eth_date.year, eth_date.month, eth_date.day
+                else:
+                    eth_year, eth_month, eth_day = eth_date[0], eth_date[1], eth_date[2]
+
+                month_name = ETHIOPIAN_MONTH_NAMES.get(int(eth_month), str(eth_month))
                 return f"{month_name} {eth_day}፣ {eth_year} ዓ.ም"
             except Exception as e:
                 return f"ስህተት: {e}"
