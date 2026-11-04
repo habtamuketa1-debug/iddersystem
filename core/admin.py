@@ -19,7 +19,7 @@ admin.site.index_title = "ወደ ዕድር አስተዳደር ዳሽቦርድ �
 
 @admin.register(Member)
 class MemberAdmin(admin.ModelAdmin):
-    form = MemberAdminForm  # <--- 2. የ miembro ፎርሙን ከዚህ ጋር ማያያዝ
+    form = MemberAdminForm  # <--- አባላትን መመዝገቢያ ፎርም
     
     # ሠንጠረዡ ላይ የፈረንሳይኛውን 'joined_date' በማጥፋት የኢትዮጵያውን 'formatted_joined_date' ብቻ ማሳየት
     list_display = ('profile_preview', 'full_name', 'phone_number', 'address', 'status', 'formatted_joined_date')
@@ -41,7 +41,7 @@ class MemberAdmin(admin.ModelAdmin):
                 dt = obj.joined_date
                 eth_date = EthiopianDateConverter.to_ethiopian(dt.year, dt.month, dt.day)
                 
-                # የተመለሰው መረጃ ቅርጽ (Format) ታፕል፣ ሊስት ወይም ኦብጀክት መሆኑን በራሱ ለይቶ ማስተናገድ
+                # የተመለሰው መረጃ ቅርጽ ታፕል፣ ሊስት ወይም ኦብጀክት መሆኑን በራሱ ለይቶ ማስተናገድ
                 if isinstance(eth_date, (list, tuple)) and len(eth_date) >= 3:
                     eth_year, eth_month, eth_day = eth_date[0], eth_date[1], eth_date[2]
                 elif hasattr(eth_date, 'year') and hasattr(eth_date, 'month') and hasattr(eth_date, 'day'):
@@ -66,12 +66,13 @@ class FamilyMemberAdmin(admin.ModelAdmin):
 
 @admin.register(Contribution)
 class ContributionAdmin(admin.ModelAdmin):
-    form = ContributionAdminForm  # <--- የመዋጮ ፎርሙን ከዚህ ጋር ማያያዝ
+    form = ContributionAdminForm  # <--- የመዋጮ ክፍያ ፎርም
     
-    list_display = ('member', 'amount', 'formatted_eth_month', 'eth_year', 'date_paid')
+    # ሰንጠረዡ ላይ የፈረንሳይኛውን 'date_paid' በማጥፋት የኢትዮጵያውን 'formatted_date_paid' ማሳየት
+    list_display = ('member', 'amount', 'formatted_eth_month', 'eth_year', 'formatted_date_paid')
     search_fields = ('member__full_name',)
     list_filter = ('eth_month', 'eth_year', 'date_paid')
-    exclude = ('date_paid',)  # ፋርሙ ላይ የፈረንሳይኛውን ቀን እንዳያሳየው መደበቅ
+    exclude = ('date_paid',)  # ፎርሙ ላይ የፈረንሳይኛውን ቀን እንዳያሳየው መደበቅ
 
     # የኢትዮጵያ ወር ቁጥርን ወደ ጽሁፍ (ስም) ቀይሮ ለማሳየት
     def formatted_eth_month(self, obj):
@@ -81,6 +82,28 @@ class ContributionAdmin(admin.ModelAdmin):
             return obj.eth_month
             
     formatted_eth_month.short_description = "የኢትዮጵያ ወር"
+
+    # የተከፈለበትን ቀን ወደ ኢትዮጵያ አቆጣጠር ቀይሮ በሰንጠረዥ ማሳየት
+    def formatted_date_paid(self, obj):
+        if obj.date_paid:
+            try:
+                dt = obj.date_paid
+                eth_date = EthiopianDateConverter.to_ethiopian(dt.year, dt.month, dt.day)
+                
+                if isinstance(eth_date, (list, tuple)) and len(eth_date) >= 3:
+                    eth_year, eth_month, eth_day = eth_date[0], eth_date[1], eth_date[2]
+                elif hasattr(eth_date, 'year') and hasattr(eth_date, 'month') and hasattr(eth_date, 'day'):
+                    eth_year, eth_month, eth_day = eth_date.year, eth_date.month, eth_date.day
+                else:
+                    eth_year, eth_month, eth_day = eth_date[0], eth_date[1], eth_date[2]
+
+                month_name = ETHIOPIAN_MONTH_NAMES.get(int(eth_month), str(eth_month))
+                return f"{month_name} {eth_day}፣ {eth_year} ዓ.ም"
+            except Exception as e:
+                return f"ስህተት: {e}"
+        return "-"
+    
+    formatted_date_paid.short_description = "የተከፈለበት ቀን (ኢትዮጵያ)"
 
 
 @admin.register(IddirEvent)
