@@ -44,8 +44,8 @@ class MemberAdmin(admin.ModelAdmin):
                 )
                 month_name = ETHIOPIAN_MONTH_NAMES.get(eth_month, str(eth_month))
                 return f"{month_name} {eth_day}፣ {eth_year} ዓ.ም"
-            except Exception:
-                return str(obj.joined_date)
+            except Exception as e:
+                return f"ስህተት: {e}"
         return "-"
     
     formatted_joined_date.short_description = "የተቀላቀለበት ቀን (ኢትዮጵያ)"

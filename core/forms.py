@@ -22,7 +22,7 @@ class MemberAdminForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # አባልን ኤዲት (Edit) ሲያደርጉ የነበረውን ቀን ወደ ኢትዮጵያ ቀይሮ በኢንፑቱ ላይ ለማሳየት
+        # አባልን ኤዲት (Edit) ሲያደርጉ የነበረውን ቀን ወደ ኢትዮጵያ ቀይሮ ለማሳየት
         if self.instance and self.instance.joined_date:
             try:
                 dt = self.instance.joined_date
@@ -33,42 +33,41 @@ class MemberAdminForm(forms.ModelForm):
             except Exception:
                 pass
 
-    def clean(self):
-        cleaned_data = super().clean()
-        eth_day = cleaned_data.get('eth_day')
-        eth_month_raw = cleaned_data.get('eth_month')
-        eth_year = cleaned_data.get('eth_year')
-
-        if eth_day and eth_month_raw and eth_year:
-            try:
-                month_mapping = {
-                    "መስከረም": 1, "ጥቅምት": 2, "ህዳር": 3, "ታህሳስ": 4,
-                    "ጥር": 5, "የካቲት": 6, "መጋቢት": 7, "ሚያዝያ": 8,
-                    "ግንቦት": 9, "ሰኔ": 10, "ሐምሌ": 11, "ነሐሴ": 12, "ጳጉሜ": 13
-                }
-                
-                if str(eth_month_raw).isdigit():
-                    month_int = int(eth_month_raw)
-                else:
-                    month_int = month_mapping.get(str(eth_month_raw).strip(), 3)
-
-                # ወደ ግሪጎሪያን ቀን መቀየር
-                gregorian_date = EthiopianDateConverter.to_gregorian(int(eth_year), month_int, int(eth_day))
-                
-                # የተለወጠውን ቀን ለ cleaned_data መስጠት
-                cleaned_data['joined_date'] = gregorian_date
-                
-            except Exception as e:
-                raise forms.ValidationError(f"የተሳሳተ የኢትዮጵያ ቀን አቆጣጠር: {e}")
-                
-        return cleaned_data
-
     def save(self, commit=True):
         instance = super().save(commit=False)
-        # clean() ውስጥ የተሰላውን joined_date በቀጥታ ለሞዴሉ መስጠት
-        if 'joined_date' in self.cleaned_data:
-            instance.joined_date = self.cleaned_data['joined_date']
+        
+        eth_day = self.cleaned_data.get('eth_day')
+        eth_month_raw = self.cleaned_data.get('eth_month')
+        eth_year = self.cleaned_data.get('eth_year')
+
+        # ዋጋዎች ከሌሉ በዴፍልት የአሁንን ቀን መጠቀም
+        if not eth_day or not eth_month_raw or not eth_year:
+            eth_day = self.t_day
+            eth_month_raw = str(self.t_month)
+            eth_year = self.t_year
+
+        try:
+            month_mapping = {
+                "መስከረም": 1, "ጥቅምት": 2, "ህዳር": 3, "ታህሳስ": 4,
+                "ጥር": 5, "የካቲት": 6, "መጋቢት": 7, "ሚያዝያ": 8,
+                "ግንቦት": 9, "ሰኔ": 10, "ሐምሌ": 11, "ነሐሴ": 12, "ጳጉሜ": 13
+            }
             
+            if str(eth_month_raw).isdigit():
+                month_int = int(eth_month_raw)
+            else:
+                month_int = month_mapping.get(str(eth_month_raw).strip(), 3)
+
+            year_int = int(eth_year)
+            day_int = int(eth_day)
+
+            # የኢትዮጵያን ቀን ወደ ግሪጎሪያን መቀየር
+            gregorian_date = EthiopianDateConverter.to_gregorian(year_int, month_int, day_int)
+            instance.joined_date = gregorian_date
+            
+        except Exception as e:
+            raise forms.ValidationError(f"የተሳሳተ የኢትዮጵያ ቀን አቆጣጠር: {e}")
+
         if commit:
             instance.save()
         return instance
