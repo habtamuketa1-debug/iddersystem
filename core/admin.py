@@ -14,6 +14,7 @@ admin.site.index_title = "ወደ ዕድር አስተዳደር ዳሽቦርድ �
 class MemberAdmin(admin.ModelAdmin):
     form = MemberAdminForm  # <--- 2. ፎርሙን ከዚህ ጋር ማያያዝ
     
+    # ሠንጠረዡ ላይ የፈረንሳይኛውን 'joined_date' በማጥፋት የኢትዮጵያውን 'formatted_joined_date' ብቻ ማሳየት
     list_display = ('profile_preview', 'full_name', 'phone_number', 'address', 'status', 'formatted_joined_date')
     search_fields = ('full_name', 'phone_number')
     list_filter = ('status',)
@@ -35,7 +36,7 @@ class MemberAdmin(admin.ModelAdmin):
                 )
                 return f"{eth_day}/{eth_month}/{eth_year}"
             except Exception:
-                return obj.joined_date
+                return str(obj.joined_date)
         return "-"
     
     formatted_joined_date.short_description = "የተቀላቀለበት ቀን (ኢትዮጵያ)"
