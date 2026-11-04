@@ -33,11 +33,19 @@ class Member(models.Model):
             return "-"
         try:
             dt = self.joined_date
-            ey, em, ed = EthiopianDateConverter.to_ethiopian(dt.year, dt.month, dt.day)
-            m_name = ETHIOPIAN_MONTH_DICT.get(int(em), str(em))
-            return f"{m_name} {ed}፣ {ey} ዓ.ም"
-        except Exception:
-            return str(self.joined_date)
+            eth_date = EthiopianDateConverter.to_ethiopian(dt.year, dt.month, dt.day)
+            
+            if isinstance(eth_date, (list, tuple)) and len(eth_date) >= 3:
+                eth_year, eth_month, eth_day = eth_date[0], eth_date[1], eth_date[2]
+            elif hasattr(eth_date, 'year') and hasattr(eth_date, 'month') and hasattr(eth_date, 'day'):
+                eth_year, eth_month, eth_day = eth_date.year, eth_date.month, eth_date.day
+            else:
+                eth_year, eth_month, eth_day = eth_date[0], eth_date[1], eth_date[2]
+
+            month_name = ETHIOPIAN_MONTH_DICT.get(int(eth_month), str(eth_month))
+            return f"{month_name} {eth_day}፣ {eth_year} ዓ.ም"
+        except Exception as e:
+            return f"-"
 
     class Meta:
         verbose_name = "የዕድር አባል"
@@ -79,11 +87,19 @@ class Contribution(models.Model):
             return "-"
         try:
             dt = self.date_paid
-            ey, em, ed = EthiopianDateConverter.to_ethiopian(dt.year, dt.month, dt.day)
-            m_name = ETHIOPIAN_MONTH_DICT.get(int(em), str(em))
-            return f"{m_name} {ed}፣ {ey} ዓ.ም"
-        except Exception:
-            return str(self.date_paid)
+            eth_date = EthiopianDateConverter.to_ethiopian(dt.year, dt.month, dt.day)
+            
+            if isinstance(eth_date, (list, tuple)) and len(eth_date) >= 3:
+                eth_year, eth_month, eth_day = eth_date[0], eth_date[1], eth_date[2]
+            elif hasattr(eth_date, 'year') and hasattr(eth_date, 'month') and hasattr(eth_date, 'day'):
+                eth_year, eth_month, eth_day = eth_date.year, eth_date.month, eth_date.day
+            else:
+                eth_year, eth_month, eth_day = eth_date[0], eth_date[1], eth_date[2]
+
+            month_name = ETHIOPIAN_MONTH_DICT.get(int(eth_month), str(eth_month))
+            return f"{month_name} {eth_day}፣ {eth_year} ዓ.ም"
+        except Exception as e:
+            return f"-"
 
     class Meta:
         verbose_name = "የመዋጮ ክፍያ"
