@@ -4,6 +4,13 @@ from .models import Member, FamilyMember, Contribution, IddirEvent
 from .forms import MemberAdminForm  # <--- 1. የኢትዮጵያ ፎርሙን ማስገባት
 from ethiopian_date import EthiopianDateConverter  # <--- የኢትዮጵያ ቀን መቀየሪያ
 
+# የኢትዮጵያ ወራት ስም ዝርዝር
+ETHIOPIAN_MONTH_NAMES = {
+    1: "መስከረም", 2: "ጥቅምት", 3: "ህዳር", 4: "ታህሳስ",
+    5: "ጥር", 6: "የካቲት", 7: "መጋቢት", 8: "ሚያዝያ",
+    9: "ግንቦት", 10: "ሰኔ", 11: "ሐምሌ", 12: "ነሐሴ", 13: "ጳጉሜ"
+}
+
 # 1. የአድሚን ፓነል ርዕሶችን በዕድራችን ስም ማበጀት
 admin.site.site_header = "«በቅ.ሚካኤል ቤ.ክ የአካባቢ ልጆች መ.እድር» - አስተዳደር ፓነል"
 admin.site.site_title = "የዕድር አስተዳደር"
@@ -27,14 +34,16 @@ class MemberAdmin(admin.ModelAdmin):
     
     profile_preview.short_description = "መገለጫ ፎቶ"
 
-    # የተመዘገበበትን ቀን ወደ ኢትዮጵያ አቆጣጠር ቀይሮ በአድሚን ሰንጠረዥ ውስጥ ለማሳየት
+    # የተመዘገበበትን ቀን ወደ ኢትዮጵያ አቆጣጠር እና በወር ስም ቀይሮ በአድሚን ሰንጠረዥ ውስጥ ለማሳየት
     def formatted_joined_date(self, obj):
         if obj.joined_date:
             try:
+                dt = obj.joined_date
                 eth_year, eth_month, eth_day = EthiopianDateConverter.to_ethiopian(
-                    obj.joined_date.year, obj.joined_date.month, obj.joined_date.day
+                    dt.year, dt.month, dt.day
                 )
-                return f"{eth_day}/{eth_month}/{eth_year}"
+                month_name = ETHIOPIAN_MONTH_NAMES.get(eth_month, str(eth_month))
+                return f"{month_name} {eth_day}፣ {eth_year} ዓ.ም"
             except Exception:
                 return str(obj.joined_date)
         return "-"

@@ -4,9 +4,20 @@ from ethiopian_date import EthiopianDateConverter  # የኢትዮጵያ ቀን �
 
 class MemberAdminForm(forms.ModelForm):
     # የኢትዮጵያ ቀን መራጫ ፊልዶች
-    eth_day = forms.IntegerField(label="የኢትዮጵያ ቀን (1-30)", min_value=1, max_value=30, initial=1)
-    eth_month = forms.ChoiceField(choices=ETHIOPIAN_MONTHS, label="የኢትዮጵያ ወር")
-    eth_year = forms.IntegerField(label="ዓመተ ምሕረት", initial=2016)  # እንደ አስፈላጊነቱ አመቱን ማስተካከል ይቻላል
+    eth_day = forms.IntegerField(
+        label="የኢትዮጵያ ቀን (1-30)", 
+        min_value=1, 
+        max_value=30, 
+        initial=1
+    )
+    eth_month = forms.ChoiceField(
+        choices=ETHIOPIAN_MONTH_NAMES if 'ETHIOPIAN_MONTH_NAMES' in globals() else ETHIOPIAN_MONTHS, 
+        label="የኢትዮጵያ ወር"
+    )
+    eth_year = forms.IntegerField(
+        label="ዓመተ ምሕረት", 
+        initial=2016
+    )
 
     class Meta:
         model = Member
@@ -15,15 +26,20 @@ class MemberAdminForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         eth_day = cleaned_data.get('eth_day')
-        eth_month = int(cleaned_data.get('eth_month', 1))
+        eth_month = cleaned_data.get('eth_month')
         eth_year = cleaned_data.get('eth_year')
 
         if eth_day and eth_month and eth_year:
             try:
-                # EthiopianDateConverter ተጠቅሞ ወደ ግሪጎሪያን (European) ቀን መቀየር
-                gregorian_date = EthiopianDateConverter.to_gregorian(eth_year, eth_month, eth_day)
-                # የዳታቤዙን የተጠቃሚ መቀበያ ቀን በ ትክክለኛው ቀን መመዝገቡን ማረጋገጥ
-                cleaned_data['joined_date'] = gregorian_date 
+                # EthiopianDateConverter ተጠቅሞ ወደ ግሪጎሪያን ቀን መቀየር
+                gregorian_date = EthiopianDateConverter.to_gregorian(
+                    int(eth_year), int(eth_month), int(eth_day)
+                )
+                
+                # የተለወጠውን ቀን ለ cleaned_data እና ለ instance መስጠት
+                cleaned_data['joined_date'] = gregorian_date
+                self.instance.joined_date = gregorian_date
+                
             except Exception as e:
                 raise forms.ValidationError(f"የተሳሳተ የኢትዮጵያ ቀን አቆጣጠር: {e}")
                 
