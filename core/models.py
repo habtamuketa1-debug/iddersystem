@@ -45,7 +45,7 @@ class Member(models.Model):
 
 
 class FamilyMember(models.Model):
-    member = models.ForeignKey(Member, on_default=models.CASCADE, on_delete=models.CASCADE, related_name='family_members', verbose_name="ዋናው አባል")
+    member = models.ForeignKey(Member, on_delete=models.CASCADE, related_name='family_members', verbose_name="ዋናው አባል")
     full_name = models.CharField(max_length=150, verbose_name="የቤተሰብ አባል ስም")
     relationship = models.CharField(max_length=50, verbose_name="ዝምድና")
     
