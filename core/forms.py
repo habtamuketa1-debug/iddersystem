@@ -1,17 +1,16 @@
 from django import forms
 from .models import Member, Contribution, ETHIOPIAN_MONTHS
-from ethiopian_date import EthiopianDateConverter # የኢትዮጵያ ቀን መቀየሪያ ቤተ-መጽሐፍት
+from ethiopian_date import EthiopianDateConverter  # የኢትዮጵያ ቀን መቀየሪያ ቤተ-መጽሐፍት
 
 class MemberAdminForm(forms.ModelForm):
     # የኢትዮጵያ ቀን መራጫ ፊልዶች
     eth_day = forms.IntegerField(label="የኢትዮጵያ ቀን (1-30)", min_value=1, max_value=30, initial=1)
     eth_month = forms.ChoiceField(choices=ETHIOPIAN_MONTHS, label="የኢትዮጵያ ወር")
-    eth_year = forms.IntegerField(label="ዓመተ ምሕረት", initial=2016) # እንደ አስፈላጊነቱ አመቱን ማስተካከል ይቻላል
+    eth_year = forms.IntegerField(label="ዓመተ ምሕረት", initial=2016)  # እንደ አስፈላጊነቱ አመቱን ማስተካከል ይቻላል
 
     class Meta:
         model = Member
-        fields = '__all__'
-        # ዴፍልት የሆነውን የፈረንሳይኛ ቀን ፊልድ ከፈለጉ መደበቅ ወይም ከዚህ በታች ማስተካከል ይቻላል
+        exclude = ['joined_date']  # አሮጌውን የግሪጎሪያን ቀን መምረጫ በመደበቅ በኢትዮጵያ ቀን እንዲተካ ማድረግ
 
     def clean(self):
         cleaned_data = super().clean()
@@ -23,7 +22,7 @@ class MemberAdminForm(forms.ModelForm):
             try:
                 # EthiopianDateConverter ተጠቅሞ ወደ ግሪጎሪያን (European) ቀን መቀየር
                 gregorian_date = EthiopianDateConverter.to_gregorian(eth_year, eth_month, eth_day)
-                # የዳታቤዙን የተጠቃሚ መቀበያ ቀን (לምሳሌ: joined_date) በእርግጠኛነት መቀየር
+                # የዳታቤዙን የተጠቃሚ መቀበያ ቀን በ ትክክለኛው ቀን መመዝገቡን ማረጋገጥ
                 cleaned_data['joined_date'] = gregorian_date 
             except Exception as e:
                 raise forms.ValidationError(f"የተሳሳተ የኢትዮጵያ ቀን አቆጣጠር: {e}")
