@@ -66,9 +66,19 @@ class FamilyMemberAdmin(admin.ModelAdmin):
 
 @admin.register(Contribution)
 class ContributionAdmin(admin.ModelAdmin):
-    list_display = ('member', 'amount', 'eth_month', 'eth_year', 'date_paid')
+    # 'eth_month' ምትክ 'formatted_eth_month' በመጠቀም የወሩን ስም በሰንጠረዥ ማሳየት
+    list_display = ('member', 'amount', 'formatted_eth_month', 'eth_year', 'date_paid')
     search_fields = ('member__full_name',)
     list_filter = ('eth_month', 'eth_year', 'date_paid')
+
+    # የኢትዮጵያ ወር ቁጥርን ወደ ጽሁፍ (ስም) ቀይሮ ለማሳየት
+    def formatted_eth_month(self, obj):
+        try:
+            return ETHIOPIAN_MONTH_NAMES.get(int(obj.eth_month), obj.eth_month)
+        except Exception:
+            return obj.eth_month
+            
+    formatted_eth_month.short_description = "የኢትዮጵያ ወር"
 
 
 @admin.register(IddirEvent)
