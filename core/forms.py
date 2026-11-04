@@ -14,14 +14,17 @@ class MemberAdminForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
+        return cleaned_data
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
         
-        eth_day = cleaned_data.get('eth_day')
-        eth_month_raw = cleaned_data.get('eth_month')
-        eth_year = cleaned_data.get('eth_year')
+        eth_day = self.cleaned_data.get('eth_day')
+        eth_month_raw = self.cleaned_data.get('eth_month')
+        eth_year = self.cleaned_data.get('eth_year')
 
         if eth_day and eth_month_raw and eth_year:
             try:
-                # የወሩ ዋጋ ስም ከሆነ ወደ ተጓዳኝ ቁጥር (1-13) መቀየር
                 month_mapping = {
                     "መስከረም": 1, "ጥቅምት": 2, "ህዳር": 3, "ታህሳስ": 4,
                     "ጥር": 5, "የካቲት": 6, "መጋቢት": 7, "ሚያዝያ": 8,
@@ -39,11 +42,12 @@ class MemberAdminForm(forms.ModelForm):
                 # EthiopianDateConverter ተጠቅሞ ወደ ግሪጎሪያን ቀን መቀየር
                 gregorian_date = EthiopianDateConverter.to_gregorian(year_int, month_int, day_int)
                 
-                # የተገኘውን ትክክለኛ ቀን መመደብ
-                self.instance.joined_date = gregorian_date
-                cleaned_data['joined_date'] = gregorian_date
+                # የተገኘውን ትክክለኛ ቀን ለኢንስታንሱ መስጠት
+                instance.joined_date = gregorian_date
                 
             except Exception as e:
                 raise forms.ValidationError(f"የተሳሳተ የኢትዮጵያ ቀን አቆጣጠር: {e}")
-                
-        return cleaned_data
+
+        if commit:
+            instance.save()
+        return instance
