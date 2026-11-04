@@ -19,7 +19,10 @@ class Member(models.Model):
     profile_picture = CloudinaryField('image', blank=True, null=True)
     
     status = models.CharField(max_length=20, choices=MEMBER_STATUS_CHOICES, default='ACTIVE', verbose_name="የአባል ሁኔታ")
-    joined_date = models.DateField(default=timezone.now, verbose_name="የተቀላቀለበት ቀን")
+    
+    # እዚህ ላይ default=timezone.now መጥፋቱን ልብ ይበሉ! (ፎርሙ የሚልከውን ቀን እንዲቀበል)
+    joined_date = models.DateField(null=True, blank=True, verbose_name="የተቀላቀለበት ቀን")
+    
     is_active = models.BooleanField(default=True, verbose_name="ንቁ ነው?")
 
     def __str__(self):
